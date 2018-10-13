@@ -1,9 +1,11 @@
 package com.example.entities;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 
 @Entity
-@Inheritance(strategy = InheritanceType.JOINED)
 public class ETCParent {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

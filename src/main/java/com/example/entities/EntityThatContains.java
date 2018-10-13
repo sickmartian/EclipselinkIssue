@@ -6,6 +6,7 @@ import javax.persistence.Entity;
 
 @Entity
 public class EntityThatContains extends ETCParent {
+
     @Index
     private MyEntity myEntity;
     private String containsA;

@@ -17,6 +17,7 @@ public class MyTest {
 
     private EntityManager em = Persistence.createEntityManagerFactory("").createEntityManager();
     private static final int VOLUME = 10000;
+    private static final int TIMES = 5;
 
     @Test
     public void myTest() {
@@ -37,19 +38,14 @@ public class MyTest {
         em.getTransaction().commit();
         em.clear();
 
-        em.getTransaction().begin();
-        for (int i = VOLUME - preExistingList.size(); i < VOLUME * 2 - preExistingList.size(); i++) {
-            createOrReuse(null, i);
+        for (int t = 1; t < TIMES; t++) {
+            em.getTransaction().begin();
+            for (int i = VOLUME * t - preExistingList.size(); i < VOLUME * (t + 1) - preExistingList.size(); i++) {
+                createOrReuse(null, i);
+            }
+            em.getTransaction().commit();
+            em.clear();
         }
-        em.getTransaction().commit();
-        em.clear();
-
-        em.getTransaction().begin();
-        for (int i = VOLUME * 2 - preExistingList.size(); i < VOLUME * 3 - preExistingList.size(); i++) {
-            createOrReuse(null, i);
-        }
-        em.getTransaction().commit();
-        em.clear();
 
         EntityThatContains c = new EntityThatContains(preExistingList.get(0), "etcA", "etcB");
         em.getTransaction().begin();
