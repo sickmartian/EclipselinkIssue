@@ -33,4 +33,13 @@ public class SubEntity {
     public String getSubFieldB() {
         return subFieldB;
     }
+
+    @Override
+    public String toString() {
+        return "SubEntity{" +
+                "parent=" + parent +
+                ", subFieldA='" + subFieldA + '\'' +
+                ", subFieldB='" + subFieldB + '\'' +
+                '}';
+    }
 }

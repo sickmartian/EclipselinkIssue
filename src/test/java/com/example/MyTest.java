@@ -1,25 +1,92 @@
 package com.example;
 
+import com.example.entities.EntityThatContains;
 import com.example.entities.MyEntity;
+import com.example.entities.SubEntity;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
+import java.util.Arrays;
+import java.util.List;
 
 @RunWith(JUnit4.class)
 public class MyTest {
 
+    private EntityManager em = Persistence.createEntityManagerFactory("").createEntityManager();
+    private static final int VOLUME = 10000;
+
     @Test
     public void myTest() {
-        EntityManager em = Persistence.createEntityManagerFactory("").createEntityManager();
+        List<MyEntity> preExistingList = Arrays.asList(generatePreExisting("pa"),
+                generatePreExisting("pb"), generatePreExisting("pc"), generatePreExisting("pd"),
+                generatePreExisting("pe"), generatePreExisting("pf"), generatePreExisting("pg"),
+                generatePreExisting("ph"), generatePreExisting("pi"), generatePreExisting("pj"),
+                generatePreExisting("pk"), generatePreExisting("pl"), generatePreExisting("pm"));
 
-        MyEntity e = new MyEntity("first", "a", "b");
+        em.getTransaction().begin();
+        int j = 0;
+        for (MyEntity preExisting : preExistingList) {
+            createOrReuse(preExisting, Integer.MAX_VALUE - j++);
+        }
+        for (int i = 0; i < VOLUME - preExistingList.size() ; i++) {
+            createOrReuse(null, i);
+        }
+        em.getTransaction().commit();
+        em.clear();
 
-        em.persist(e);
+        em.getTransaction().begin();
+        for (int i = VOLUME - preExistingList.size(); i < VOLUME * 2 - preExistingList.size(); i++) {
+            createOrReuse(null, i);
+        }
+        em.getTransaction().commit();
+        em.clear();
 
-        assert em.contains(e);
+        em.getTransaction().begin();
+        for (int i = VOLUME * 2 - preExistingList.size(); i < VOLUME * 3 - preExistingList.size(); i++) {
+            createOrReuse(null, i);
+        }
+        em.getTransaction().commit();
+        em.clear();
+
+        EntityThatContains c = new EntityThatContains(preExistingList.get(0), "etcA", "etcB");
+        em.getTransaction().begin();
+        em.persist(c);
+        em.getTransaction().commit();
+        em.getTransaction().begin();
+        em.getTransaction().commit();
+
+        System.out.println("ME: " + em.createQuery("SELECT me From MyEntity me").getResultList().size());
+        System.out.println("SE: " + em.createQuery("SELECT se From SubEntity se").getResultList().size());
+        System.out.println("ETC: " + em.createQuery("SELECT etc From EntityThatContains etc").getResultList().size());
+    }
+
+    private MyEntity generatePreExisting(String id) {
+        em.getTransaction().begin();
+        MyEntity preExisting = new MyEntity(id);
+        preExisting.setEntityFieldA("preExistingA_" + id);
+        preExisting.setEntityFieldB("preExistingB_" + id);
+        SubEntity se = new SubEntity(preExisting, "firstS", "secondS");
+        em.persist(se);
+        preExisting.setSubEntity(se);
+        em.persist(preExisting);
+        em.getTransaction().commit();
+
+        return preExisting;
+    }
+
+    private void createOrReuse(MyEntity preExisting, int i) {
+        MyEntity e = preExisting == null ? new MyEntity("New" + i) : preExisting;
+        e.setEntityFieldA("a" + i);
+        e.setEntityFieldB("b" + i);
+        if (e.getSubEntity() == null) {
+            e.setSubEntity(new SubEntity(e, "firstS", "secondS"));
+        }
+        em.merge(e);
+
+        em.flush();
     }
 
 }

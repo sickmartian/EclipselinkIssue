@@ -1,22 +1,25 @@
 package com.example.entities;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import org.eclipse.persistence.annotations.Index;
+
+import javax.persistence.*;
 
 @Entity
 public class MyEntity {
     @Id
     private String myId;
+
+    @Index
     private String entityFieldA;
     private String entityFieldB;
+
+    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, mappedBy = "parent", fetch = FetchType.LAZY)
     private SubEntity subEntity;
 
     private MyEntity() {}
 
-    public MyEntity(String myId, String entityFieldA, String entityFieldB) {
+    public MyEntity(String myId) {
         this.myId = myId;
-        this.entityFieldA = entityFieldA;
-        this.entityFieldB = entityFieldB;
     }
 
     public String getMyId() {
@@ -45,5 +48,15 @@ public class MyEntity {
 
     public void setSubEntity(SubEntity subEntity) {
         this.subEntity = subEntity;
+    }
+
+    @Override
+    public String toString() {
+        return "MyEntity{" +
+                "myId='" + myId + '\'' +
+                ", entityFieldA='" + entityFieldA + '\'' +
+                ", entityFieldB='" + entityFieldB + '\'' +
+                ", subEntity=" + subEntity +
+                '}';
     }
 }
