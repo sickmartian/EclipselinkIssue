@@ -15,7 +15,7 @@ import java.util.List;
 public class MyTest {
 
     private EntityManager em = Persistence.createEntityManagerFactory("").createEntityManager();
-    private static final int VOLUME = 15000;
+    private static final int VOLUME = 20000;
     private static final int TIMES = 3;
 
     @Test

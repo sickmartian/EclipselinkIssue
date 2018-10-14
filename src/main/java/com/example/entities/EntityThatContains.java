@@ -1,12 +1,14 @@
 package com.example.entities;
 
-import org.eclipse.persistence.annotations.Index;
-
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 
 @Entity
-public class EntityThatContains extends ETCParent {
-
+public class EntityThatContains {
+    @Id
+    @GeneratedValue
+    private Long id;
     private MyEntity myEntity;
     private String containsA;
     private String containsB;
@@ -38,5 +40,9 @@ public class EntityThatContains extends ETCParent {
                 ", containsA='" + containsA + '\'' +
                 ", containsB='" + containsB + '\'' +
                 '}';
+    }
+
+    public Long getId() {
+        return id;
     }
 }
