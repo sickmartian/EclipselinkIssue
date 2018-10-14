@@ -13,9 +13,6 @@ public class MyEntity {
     private String entityFieldA;
     private String entityFieldB;
 
-    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, mappedBy = "parent", fetch = FetchType.LAZY)
-    private SubEntity subEntity;
-
     private MyEntity() {}
 
     public MyEntity(String myId) {
@@ -42,21 +39,12 @@ public class MyEntity {
         this.entityFieldB = entityFieldB;
     }
 
-    public SubEntity getSubEntity() {
-        return subEntity;
-    }
-
-    public void setSubEntity(SubEntity subEntity) {
-        this.subEntity = subEntity;
-    }
-
     @Override
     public String toString() {
         return "MyEntity{" +
                 "myId='" + myId + '\'' +
                 ", entityFieldA='" + entityFieldA + '\'' +
                 ", entityFieldB='" + entityFieldB + '\'' +
-                ", subEntity=" + subEntity +
                 '}';
     }
 }

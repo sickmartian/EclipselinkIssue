@@ -2,7 +2,6 @@ package com.example;
 
 import com.example.entities.EntityThatContains;
 import com.example.entities.MyEntity;
-import com.example.entities.SubEntity;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -16,8 +15,8 @@ import java.util.List;
 public class MyTest {
 
     private EntityManager em = Persistence.createEntityManagerFactory("").createEntityManager();
-    private static final int VOLUME = 10000;
-    private static final int TIMES = 5;
+    private static final int VOLUME = 15000;
+    private static final int TIMES = 3;
 
     @Test
     public void myTest() {
@@ -55,7 +54,6 @@ public class MyTest {
         em.getTransaction().commit();
 
         System.out.println("ME: " + em.createQuery("SELECT me From MyEntity me").getResultList().size());
-        System.out.println("SE: " + em.createQuery("SELECT se From SubEntity se").getResultList().size());
         System.out.println("ETC: " + em.createQuery("SELECT etc From EntityThatContains etc").getResultList().size());
     }
 
@@ -64,9 +62,6 @@ public class MyTest {
         MyEntity preExisting = new MyEntity(id);
         preExisting.setEntityFieldA("preExistingA_" + id);
         preExisting.setEntityFieldB("preExistingB_" + id);
-        SubEntity se = new SubEntity(preExisting, "firstS", "secondS");
-        em.persist(se);
-        preExisting.setSubEntity(se);
         em.persist(preExisting);
         em.getTransaction().commit();
 
@@ -77,9 +72,6 @@ public class MyTest {
         MyEntity e = preExisting == null ? new MyEntity("New" + i) : preExisting;
         e.setEntityFieldA("a" + i);
         e.setEntityFieldB("b" + i);
-        if (e.getSubEntity() == null) {
-            e.setSubEntity(new SubEntity(e, "firstS", "secondS"));
-        }
         em.merge(e);
 
         em.flush();
